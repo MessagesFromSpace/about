@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Messages from Space</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;1,300&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --black: #0a0a0f;
+      --deep: #0d0d1a;
+      --ink: #111122;
+      --dim: #1a1a2e;
+      --muted: #4a4a6a;
+      --mid: #7a7a9a;
+      --pale: #c8c8e0;
+      --light: #e8e8f4;
+      --white: #f4f4fc;
+      --cosmic: #b8a0ff;
+      --pulse: #ff9060;
+      --signal: #60d4ff;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--black);
+      color: var(--pale);
+      font-family: 'DM Mono', monospace;
+      font-weight: 300;
+      overflow-x: hidden;
+    }
+
+    /* STAR FIELD */
+    #starfield {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* COSMIC RAY FLASH */
+    .ray-flash {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0;
+    }
+
+    /* LAYOUT */
+    main {
+      position: relative;
+      z-index: 2;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    /* HEADER */
+    header {
+      position: relative;
+      z-index: 2;
+      padding: 6rem 2rem 0;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .signal-line {
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      color: var(--signal);
+      text-transform: uppercase;
+      margin-bottom: 2rem;
+      opacity: 0;
+      animation: fadeIn 1s ease forwards 0.3s;
+    }
+
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: clamp(3rem, 8vw, 6.5rem);
+      line-height: 0.95;
+      letter-spacing: -0.02em;
+      color: var(--white);
+      opacity: 0;
+      animation: fadeUp 1.2s ease forwards 0.5s;
+    }
+
+    h1 span {
+      display: block;
+      font-style: italic;
+      color: var(--cosmic);
+    }
+
+    .epigraph {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+      line-height: 1.6;
+      color: var(--mid);
+      max-width: 560px;
+      margin: 3rem 0 0;
+      opacity: 0;
+      animation: fadeUp 1.2s ease forwards 0.9s;
+    }
+
+    /* DIVIDER */
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--muted), transparent);
+      margin: 5rem 0;
+      opacity: 0;
+      animation: fadeIn 1s ease forwards 1.2s;
+    }
+
+    /* SECTIONS */
+    section {
+      margin-bottom: 6rem;
+    }
+
+    .section-label {
+      font-size: 0.6rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--pulse);
+      margin-bottom: 2rem;
+    }
+
+    h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      color: var(--light);
+      margin-bottom: 1.5rem;
+      line-height: 1.2;
+    }
+
+    p {
+      font-size: 0.85rem;
+      line-height: 1.9;
+      color: var(--pale);
+      max-width: 620px;
+    }
+
+    p + p {
+      margin-top: 1.2rem;
+    }
+
+    /* TIMELINE */
+    .timeline {
+      position: relative;
+      padding-left: 1.5rem;
+      border-left: 1px solid var(--dim);
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 2.5rem;
+      opacity: 0;
+      transform: translateX(-8px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .timeline-item.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -1.6rem;
+      top: 0.35rem;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--cosmic);
+      box-shadow: 0 0 8px var(--cosmic);
+    }
+
+    .timeline-date {
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      color: var(--signal);
+      text-transform: uppercase;
+      margin-bottom: 0.4rem;
+    }
+
+    .timeline-text {
+      font-size: 0.82rem;
+      line-height: 1.7;
+      color: var(--pale);
+      max-width: 580px;
+    }
+
+    /* TEAM */
+    .team-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .team-list li {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.1rem, 2vw, 1.4rem);
+      color: var(--light);
+      letter-spacing: 0.02em;
+    }
+
+    .team-list li a {
+      color: var(--cosmic);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.2s ease, color 0.2s ease;
+    }
+
+    .team-list li a:hover {
+      color: var(--white);
+      border-bottom-color: var(--cosmic);
+    }
+
+    /* FOOTER */
+    footer {
+      position: relative;
+      z-index: 2;
+      padding: 2rem 2rem 4rem;
+      max-width: 900px;
+      margin: 0 auto;
+      border-top: 1px solid var(--dim);
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-sig {
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .cosmic-counter {
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      text-align: right;
+    }
+
+    .cosmic-counter span {
+      color: var(--cosmic);
+      font-size: 0.9rem;
+      display: block;
+      margin-bottom: 0.2rem;
+    }
+
+    /* ANIMATIONS */
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes rayFlash {
+      0%   { opacity: 0; }
+      5%   { opacity: 0.06; }
+      10%  { opacity: 0; }
+      12%  { opacity: 0.03; }
+      15%  { opacity: 0; }
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.6; }
+      50%       { opacity: 1; }
+    }
+
+    /* SCROLL ANIMATIONS */
+    .fade-in-up {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .fade-in-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="starfield"></canvas>
+  <div class="ray-flash" id="rayFlash"></div>
+
+  <header>
+    <div class="signal-line">— Incoming transmission —</div>
+    <h1>Messages<span>from Space</span></h1>
+    <p class="epigraph">"What if we're still here in 100 years, still material, still creative, still caring for each other?"</p>
+  </header>
+
+  <main>
+    <div class="divider"></div>
+
+    <section class="fade-in-up">
+      <div class="section-label">// Project Overview</div>
+      <h2>Cosmic rays activate stories<br>about humanity's near-far future</h2>
+      <p>Messages from Space is an immersive installation where cosmic rays (high-energy radiation from deep space, real not science fiction, producing cascades of particles as they strike Earth's atmosphere) activate sculptural instruments and respond to each impact with light, sound, and a science fiction narrative.</p>
+      <p>At the center is Liz. She is 126 years old and has chosen the date of her death. Before she goes, she uploads her memories to an archive. Her voice threads through the installation, reflecting on a century-plus of living: the First Pandemic and Fire-Flood Years, the Second Pandemic, the great dispersal — civilization-scale events that reshaped the world she knew. The other voices belong to people in that same near-far future, speaking casually and intimately about small moments of life: a doctor, two centenarians, a young woman, an old man.</p>
+      <p>What they left in the archive is what you receive as you tune in on the walk. These are the Messages from Space.</p>
+    </section>
+
+    <section class="fade-in-up">
+      <div class="section-label">// Timeline</div>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-date">January 2025</div>
+          <div class="timeline-text">Project begins with cosmic ray hardware design.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">August 2025</div>
+          <div class="timeline-text">Sofy Yuditskaya (PhD) and Ria Rajan (MS) join the project.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">September 2025 / Playtest 1</div>
+          <div class="timeline-text">Artwalk Kingston, open studios. Kingston, NY.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">October 2025 / Playtest 2</div>
+          <div class="timeline-text">Chabot Space and Science Center, Oakland, CA. Chasing Wonder conference.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">January 2026 / Playtest 3</div>
+          <div class="timeline-text">10th annual Shenzhen-Hong Kong Biennale. <em>Messages from Off-World</em>, a spin-off project, is developed — led by Sofy with her students at The Institute for Future Technologies at Pôle Léonard de Vinci, Paris.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">March 2026 / Playtest 4</div>
+          <div class="timeline-text">Bombay Beach Biennale. FM transmission and receiver tested in an outdoor landscape for the first time.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="fade-in-up">
+      <div class="section-label">// Team</div>
+      <ul class="team-list">
+        <li><a href="https://sophikravitz.com" target="_blank" rel="noopener">Sophi Kravitz</a></li>
+        <li><a href="https://rrad.studio/" target="_blank" rel="noopener">Ria Rajan</a></li>
+        <li><a href="https://otmodelfab.com" target="_blank" rel="noopener">Oliver Tanner</a></li>
+        <li><a href="https://www.yuditskaya.com/" target="_blank" rel="noopener">Sofy Yuditskaya</a></li>
+      </ul>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-sig">Messages from Space · Work in Progress</div>
+      <div class="cosmic-counter">
+        <span id="rayCount">0</span>
+        cosmic rays detected
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // STARFIELD
+    const canvas = document.getElementById('starfield');
+    const ctx = canvas.getContext('2d');
+    let stars = [];
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+
+    function initStars() {
+      stars = [];
+      const count = Math.floor((canvas.width * canvas.height) / 3000);
+      for (let i = 0; i < count; i++) {
+        stars.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          r: Math.random() * 1.2,
+          alpha: Math.random() * 0.6 + 0.2,
+          speed: Math.random() * 0.003 + 0.001,
+          phase: Math.random() * Math.PI * 2
+        });
+      }
+    }
+
+    let t = 0;
+    function drawStars() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      t += 0.008;
+      stars.forEach(s => {
+        const a = s.alpha * (0.7 + 0.3 * Math.sin(t * s.speed * 100 + s.phase));
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(200, 200, 240, ${a})`;
+        ctx.fill();
+      });
+      requestAnimationFrame(drawStars);
+    }
+
+    resize();
+    initStars();
+    drawStars();
+    window.addEventListener('resize', () => { resize(); initStars(); });
+
+    // COSMIC RAY FLASH
+    const rayFlash = document.getElementById('rayFlash');
+    let rayCount = 0;
+    const rayCounter = document.getElementById('rayCount');
+
+    function triggerRay() {
+      const hue = Math.random() > 0.5 ? '180, 160, 255' : '96, 212, 255';
+      rayFlash.style.background = `radial-gradient(ellipse at ${Math.random()*100}% ${Math.random()*100}%, rgba(${hue}, 0.15), transparent 60%)`;
+      rayFlash.style.animation = 'none';
+      void rayFlash.offsetWidth;
+      rayFlash.style.animation = 'rayFlash 0.4s ease forwards';
+      rayCount++;
+      rayCounter.textContent = rayCount;
+
+      // flash a random timeline dot
+      const dots = document.querySelectorAll('.timeline-item::before');
+      // We'll just flash the whole timeline border instead
+      const tl = document.querySelector('.timeline');
+      if (tl) {
+        tl.style.borderColor = `rgba(180,160,255,0.6)`;
+        setTimeout(() => tl.style.borderColor = '', 300);
+      }
+
+      scheduleRay();
+    }
+
+    function scheduleRay() {
+      const interval = 3000 + Math.random() * 12000;
+      setTimeout(triggerRay, interval);
+    }
+
+    scheduleRay();
+
+    // SCROLL OBSERVER
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('.fade-in-up, .timeline-item').forEach(el => observer.observe(el));
+  </script>
+
+</body>
+</html>
