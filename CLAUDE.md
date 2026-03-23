@@ -16,12 +16,12 @@ python3 -m http.server 8000
 
 ## Architecture
 
-Everything lives in `index.html`:
-
-- **CSS** (`:root` custom properties, layout, animations) — inline in `<style>`
-- **Canvas starfield** — drawn via `requestAnimationFrame` loop on a fixed `<canvas>`
-- **Cosmic ray flash** — randomized radial-gradient overlay triggered on a Poisson-like timer (`scheduleRay`) every 3–15 seconds; increments the footer counter
-- **Scroll animations** — `IntersectionObserver` adds `.visible` to `.fade-in-up` and `.timeline-item` elements as they enter the viewport
+- `index.html` — markup and Google Analytics snippet
+- `styles.css` — all styles, CSS custom properties, and keyframe animations
+- `script.js` — three subsystems:
+  - **Canvas starfield** — drawn via `requestAnimationFrame` loop on a fixed `<canvas>`
+  - **Cosmic ray flash** — randomized radial-gradient overlay triggered on a Poisson-like timer (`scheduleRay`) every 3–15 seconds; increments the footer counter
+  - **Scroll animations** — `IntersectionObserver` adds `.visible` to `.fade-in-up` and `.timeline-item` elements as they enter the viewport
 
 ## Design tokens
 
