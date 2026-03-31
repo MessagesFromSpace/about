@@ -108,6 +108,23 @@ if (track && images.length) {
   });
 }
 
+// AMBIENT AUDIO
+const audio = document.getElementById('ambientAudio');
+const audioToggle = document.getElementById('audioToggle');
+audio.volume = 0.15;
+
+audioToggle.addEventListener('click', () => {
+  if (audio.paused) {
+    audio.play();
+    audioToggle.textContent = '⏸ ambient';
+    audioToggle.classList.add('playing');
+  } else {
+    audio.pause();
+    audioToggle.textContent = '▶ ambient';
+    audioToggle.classList.remove('playing');
+  }
+});
+
 // SCROLL OBSERVER
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(e => {
