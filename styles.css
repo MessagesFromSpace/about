@@ -95,6 +95,27 @@ h1 span {
   color: var(--cosmic);
 }
 
+.play-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border: 1px solid var(--cosmic);
+  border-radius: 50%;
+  color: var(--cosmic);
+  font-size: 0.6rem;
+  text-decoration: none;
+  vertical-align: middle;
+  margin-left: 0.5rem;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.play-btn:hover {
+  background: var(--cosmic);
+  color: var(--black);
+}
+
 .epigraph {
   font-family: 'Cormorant Garamond', serif;
   font-style: italic;
